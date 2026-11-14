@@ -1,0 +1,33 @@
+---
+applyTo: "app/**,migrations/**,tests/api/**"
+---
+
+# 后端路径级指令（示例）
+
+> 用法：复制到 `.github/instructions/backend.instructions.md`。
+> GitHub Copilot 官方要求路径级指令以 `.instructions.md` 结尾，且**必须**含
+> `applyTo` frontmatter。本文件只写项目专属内容，不重复通用红线。
+
+## 项目约定
+
+- FastAPI 路由在 `app/api/v1/`；业务规则在 `app/domain/`；
+  基础设施在 `app/infra/`，依赖方向只能由外向内。
+- 订单状态机唯一写入方是 `app/domain/orders/state.py`。
+- 所有导出查询必须带租户条件；列表与批量接口逐条做对象级授权。
+- 新增或修改接口时，同步更新 `tests/api/` 下的契约测试。
+- 迁移脚本放在 `migrations/`；结构变更必须提供回滚路径与旧数据兼容方案。
+
+## 验证命令
+
+```bash
+make lint && make typecheck && make test
+```
+
+## 说明
+
+- 仓库级 `.github/copilot-instructions.md` 由安装器提供通用红线；
+  路径级文件与它**同时生效**，因此不要写冲突规则。
+- 在 GitHub.com 上，路径级指令目前仅由 Copilot cloud agent 与
+  Copilot code review 支持；IDE 支持随产品与版本而不同（待验证）。
+- 本示例**不设置** `excludeAgent`，避免依赖跨环境行为。
+- 不要设置与 `ai-engineering-standards.instructions.md` 相同的文件名。

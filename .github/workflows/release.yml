@@ -1,0 +1,94 @@
+name: Release
+
+# Phase 6 发布流程（任务书 §六/§七）。
+# 触发条件：**只有推送符合 v<MAJOR.MINOR.PATCH> 的 Git Tag 才触发**——推 tag 本身就是
+# 显式的发布授权动作，CI 不会在普通 push/PR 上自动发版（那由 ci.yml 的质量门禁负责）。
+# 发布前必须通过：质量门禁（--strict）、全量测试、版本/Tag/CHANGELOG 一致性、
+# 发布产物完整性、归档自校验。任一失败 job 即失败，不会创建 Release。
+# **不自动覆盖已有 Release**：若同名 Tag 的 Release 已存在则直接失败并要求人工处理。
+
+on:
+  push:
+    tags:
+      # glob 只做粗筛；严格 v<MAJOR.MINOR.PATCH> 校验由下面的
+      # Derive version 步骤调用 version_validator.version_from_tag 完成
+      # （规则单一来源且已单测），避免 glob 与正则两套规则漂移。
+      - "v*.*.*"
+
+permissions:
+  contents: write   # 仅创建 Release / 上传 asset 需要；其余只读
+
+jobs:
+  release:
+    name: Verify and publish ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Derive version from tag
+        id: ver
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          case "$TAG" in v*) ;; *) echo "::error::Tag 必须以 v 开头: $TAG"; exit 1;; esac
+          # 严格校验走单一来源函数（与 release_check 一致，已单测）。
+          VERSION=$(python -c "import sys; sys.path.insert(0, 'tooling'); \
+            from validators.version_validator import version_from_tag; \
+            print(version_from_tag(sys.argv[1]) or '')" "$TAG")
+          if [ -z "$VERSION" ]; then
+            echo "::error::Tag $TAG 不符合 v<MAJOR.MINOR.PATCH> 版本号规则"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "发布版本: $VERSION（来自 Tag $TAG）"
+
+      # 1. 发布前检查：质量门禁 + 版本/Tag/CHANGELOG 一致 + 全量测试
+      #    --strict 使 CHANGELOG 缺当前版本段等发布硬要求成为失败项；
+      #    --version 确保 Tag 版本与 VERSION 完全一致。
+      - name: Release check (strict, with full tests)
+        run: >-
+          python tooling/scripts/release_check.py --strict
+          --version "${{ steps.ver.outputs.version }}" --run-tests
+
+      # 2. 构建发布归档（标准库 zipfile，清单与 release_check 共用单一来源）
+      - name: Build release artifact
+        run: >-
+          python tooling/scripts/build_release_artifact.py
+          --output "dist/ai-engineering-standards-${{ steps.ver.outputs.version }}.zip"
+
+      # 3. 归档自校验：必需文件齐全 + 归档内版本与 Tag 一致
+      - name: Verify release artifact
+        run: >-
+          python tooling/scripts/build_release_artifact.py --check
+          "dist/ai-engineering-standards-${{ steps.ver.outputs.version }}.zip"
+          --expect-version "${{ steps.ver.outputs.version }}"
+
+      # 4. 不允许覆盖已有 Release：存在则失败，不 --clobber、不删除用户资产
+      - name: Refuse to overwrite existing Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${{ steps.ver.outputs.tag }}" >/dev/null 2>&1; then
+            echo "::error::Release ${{ steps.ver.outputs.tag }} 已存在；本流程不自动覆盖。" \
+                 "请人工删除旧 Release 或改用新版本号后重新打 Tag。"
+            exit 1
+          fi
+          echo "Release ${{ steps.ver.outputs.tag }} 尚不存在，允许继续。"
+
+      # 5. 创建 Release 并上传归档（ gh CLI 在 runner 预装，无第三方部署平台）
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" \
+            "dist/ai-engineering-standards-${{ steps.ver.outputs.version }}.zip" \
+            --title "${{ steps.ver.outputs.tag }}" \
+            --generate-notes

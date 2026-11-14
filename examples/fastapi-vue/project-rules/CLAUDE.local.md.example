@@ -1,0 +1,33 @@
+# 项目自有 CLAUDE.local.md（示例）
+
+> 用法：复制到项目根目录 `CLAUDE.local.md`，并加入 `.gitignore`。
+> Claude Code 官方把它与 `CLAUDE.md` 并列加载；它是个人项目偏好，不进版本库。
+> 通用规范由安装器生成的 `.claude/rules/ai-engineering-standards.md` 提供，
+> 本文件只写项目专属内容，不重复通用红线。
+
+## 项目背景
+
+```markdown
+# 项目专属偏好（个人）
+
+- 后端是 FastAPI，应用层在 `app/`，领域规则在 `app/domain/`。
+- 新增接口必须同时更新 `app/api/v1/` 下的路由与 `tests/api/` 下的契约测试。
+- 数据库迁移放在 `migrations/`，执行前先在 `make migrate-dry-run` 演练。
+- 前端用 Vue 3 + `<script setup>` + TypeScript，不新增 UI 框架。
+- 本地验证命令：`make lint && make typecheck && make test && make build`。
+- 遇到订单状态机相关问题，先读 `app/domain/orders/state.py`，不要猜状态名。
+```
+
+## 不做什么
+
+- 不在这里复制 `core/ai-behavior.md` 的红线；
+- 不写与 `.ai-standards/` 中规范冲突的规则；
+- 不把密钥、Token、真实连接串写进任何指令文件；
+- 不手工编辑带 `AI-ENGINEERING-STANDARDS:MANAGED` 标记的文件。
+
+## 说明
+
+- 若项目已有自己的 `CLAUDE.md`，安装器会跳过托管的 `CLAUDE.md`，
+  但 `.claude/rules/ai-engineering-standards.md` 仍会安装，规范不会失效。
+- 多个 `CLAUDE.md` / `CLAUDE.local.md` 是**拼接进上下文**，不是硬覆盖；
+  冲突时 Claude 可能任选其一。需要硬性阻断请用 hook 或 managed settings。

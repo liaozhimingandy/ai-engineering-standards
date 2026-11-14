@@ -1,0 +1,43 @@
+# 项目自有 AGENTS.md 追加段落（示例）
+
+> 用法：把下面「追加段落」复制进项目已有的 `AGENTS.md` 末尾。
+> 不要替换原有内容——安装器永远不会覆盖用户自有文件。
+> 这是 Codex 入口文件被占用时，让通用规范生效的手工通道。
+
+## 追加段落
+
+```markdown
+## 通用 AI 工程规范（人工维护）
+
+本项目接入了 ai-engineering-standards。完整规范在 `.ai-standards/`：
+
+- 动手前必读 `.ai-standards/core/ai-behavior.md`（AI 行为红线）。
+- 涉及 HTTP 接口时读 `.ai-standards/standards/backend/api.md`。
+- 涉及数据库或迁移时读 `.ai-standards/standards/backend/database.md`。
+- 涉及前端时读 `.ai-standards/standards/frontend/vue.md` 与 `ui.md`。
+- 涉及权限、密钥、用户输入时读 `.ai-standards/core/security-principles.md`。
+- Skills 位于 `.agents/skills/`，用 `/skills` 查看或 `$skill-name` 调用。
+- 规范版本与文件哈希见 `.ai-standards/manifest.json`。
+
+不要在常驻指令里粘贴完整规范正文；按需读取即可。
+```
+
+## 项目专属规则（示例）
+
+```markdown
+## 订单域约定
+
+- 订单状态共 7 个状态，唯一写入方是 `app/domain/orders/state.py`；
+  其他模块通过 `OrderService` 发起状态变更。
+- 所有导出接口必须走 `app/api/v1/exports.py`，并带租户条件。
+- 前端路由 `/orders/:id` 的参数必须用 `useRoute` 读取，
+  不在组件内解析 `window.location`。
+```
+
+## 说明
+
+- 本文件**不带** `AI-ENGINEERING-STANDARDS:MANAGED` 标记，安装器会识别为
+  用户自有文件并跳过。
+- Codex 官方按目录层级合并 `AGENTS.md`：从项目根到当前工作目录拼接，
+  越靠近工作目录优先级越高；子目录可放更细的规则。
+- 全局偏好放 `~/.codex/AGENTS.md`，不要写入仓库。

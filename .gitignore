@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 安装器产物与本地环境
+.ai-standards/
+.env
+.env.*
+*.log
+
+# 编辑器 / 操作系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 备份与临时文件
+*.bak
+*.tmp
+*~

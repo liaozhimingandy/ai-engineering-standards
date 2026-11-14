@@ -1,0 +1,38 @@
+# 项目自有规则示例（纯 Python 应用）
+
+> 用法：如果项目已有自己的 `AGENTS.md`，把下面的「项目专属段落」追加进去；
+> 安装器永远不会覆盖用户自有文件。若项目原本没有 `AGENTS.md`，安装器会生成
+> 一份带 `AI-ENGINEERING-STANDARDS:MANAGED` 标记的托管版本，此时**不要**手工编辑它，
+> 项目规则应放到子目录 `AGENTS.md` 或这里所示的独立段落中。
+
+## 项目专属段落
+
+```markdown
+## report-tool 项目约定
+
+- 只用 Python 3.10+ 标准库，不引入第三方包。
+- 入口是 `report_tool/cli.py`；报告生成逻辑在 `report_tool/core/`，
+  I/O 适配在 `report_tool/io/`。依赖方向只能由外向内。
+- 验证命令：`python -m unittest discover -s tests -v`。
+- CSV 输出使用 UTF-8 with BOM，字段顺序由 `report_tool/schema.py` 定义，
+  不要在调用点另写一份字段列表。
+- 临时文件放 `tempfile.TemporaryDirectory()`，不写当前工作目录。
+- 空输入、超长字段、含逗号/换行的字段必须有对应测试。
+```
+
+## 为什么这些规则留在本项目
+
+- 它们描述的是**这个项目的业务与约定**，不是通用工程原则；
+- 通用原则（最小必要修改、异常处理、日志、安全边界、测试分层）已经由
+  `.ai-standards/core/` 提供，复制过来只会产生规则漂移；
+- 规范仓库刻意保持项目无关，见 `docs/standards-guide.md` §6。
+
+## 验证
+
+```bash
+python -m unittest discover -s tests -v
+python ~/work/ai-engineering-standards/tooling/scripts/check.py --target .
+```
+
+安装前后业务代码应完全一致：安装器只在 `.ai-standards/`、`.agents/skills/`
+以及适配器路径下写文件。

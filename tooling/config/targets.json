@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "installer_version": "1.0.0",
+  "note": "本文件是 tooling/validators/targets.py 的机器可读导出快照，不是第二事实来源。代码常量为准；check.py --adapters 会校验二者一致，漂移即报 ERROR。",
+  "markers": {
+    "marker": "AI-ENGINEERING-STANDARDS:MANAGED",
+    "bundle_root": ".ai-standards",
+    "manifest_rel": ".ai-standards/manifest.json",
+    "global_manage_root": ".ai-engineering-standards",
+    "global_bundle_root": ".ai-engineering-standards/bundle",
+    "global_manifest_rel": ".ai-engineering-standards/manifest.json"
+  },
+  "tools": ["codex", "claude", "cursor", "copilot", "workbuddy"],
+  "tool_aliases": {
+    "claude-code": "claude",
+    "codebuddy": "workbuddy",
+    "tencent-workbuddy": "workbuddy"
+  },
+  "skills": [
+    "project-analysis",
+    "requirements-analysis",
+    "architecture-design",
+    "software-development",
+    "code-review"
+  ],
+  "project": {
+    "codex": { "skills_dir": ".agents/skills", "entries": [
+      { "source": "adapters/codex/AGENTS.md", "dest": "AGENTS.md", "fmt": "plain", "guarded": true }
+    ] },
+    "claude": { "skills_dir": ".claude/skills", "entries": [
+      { "source": "adapters/claude-code/CLAUDE.md", "dest": "CLAUDE.md", "fmt": "plain", "guarded": true },
+      { "source": "adapters/claude-code/rules/ai-engineering-standards.md", "dest": ".claude/rules/ai-engineering-standards.md", "fmt": "claude-rule", "guarded": false }
+    ] },
+    "cursor": { "skills_dir": ".cursor/skills", "entries": [
+      { "source": "adapters/cursor/rules/ai-engineering-standards.mdc", "dest": ".cursor/rules/ai-engineering-standards.mdc", "fmt": "cursor-mdc", "guarded": false }
+    ] },
+    "copilot": { "skills_dir": ".github/skills", "entries": [
+      { "source": "adapters/copilot/copilot-instructions.md", "dest": ".github/copilot-instructions.md", "fmt": "plain", "guarded": true },
+      { "source": "adapters/copilot/instructions.md", "dest": ".github/instructions/ai-engineering-standards.instructions.md", "fmt": "copilot-path", "guarded": false }
+    ] },
+    "workbuddy": { "skills_dir": ".codebuddy/skills", "entries": [
+      { "source": "adapters/workbuddy/CODEBUDDY.md", "dest": "CODEBUDDY.md", "fmt": "plain", "guarded": true },
+      { "source": "adapters/workbuddy/rules/ai-engineering-standards.md", "dest": ".codebuddy/rules/ai-engineering-standards.md", "fmt": "plain", "guarded": false }
+    ] }
+  },
+  "global": {
+    "codex": { "skills_dir": ".agents/skills", "entry_status": "SUPPORTED", "entries": [
+      { "source": "adapters/codex/global/ENTRY.md", "dest": ".codex/AGENTS.md", "fmt": "global-entry", "guarded": true }
+    ] },
+    "claude": { "skills_dir": ".claude/skills", "entry_status": "SUPPORTED", "entries": [
+      { "source": "adapters/claude-code/global/ENTRY.md", "dest": ".claude/CLAUDE.md", "fmt": "global-entry", "guarded": true }
+    ] },
+    "cursor": { "skills_dir": ".cursor/skills", "entry_status": "PARTIAL", "entries": [] },
+    "copilot": { "skills_dir": ".copilot/skills", "entry_status": "PARTIAL", "project_only": false, "entries": [
+      { "source": "adapters/copilot/global/ENTRY.md", "dest": ".copilot/copilot-instructions.md", "fmt": "global-entry", "guarded": true }
+    ] },
+    "workbuddy": { "skills_dir": ".codebuddy/skills", "entry_status": "PARTIAL", "project_only": true, "entries": [] }
+  },
+  "global_integration": {
+    "source": "adapters/GLOBAL-INTEGRATION.template.md",
+    "dest": ".ai-engineering-standards/GLOBAL-INTEGRATION.md"
+  }
+}

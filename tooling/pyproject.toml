@@ -1,0 +1,38 @@
+# tooling 元数据（Phase 5，任务书 §二）。
+#
+# 注意：本工具链刻意**不声明 [build-system]**，因为它不是可 pip 安装的包——
+# 全部命令都是直接用 `python tooling/scripts/<cmd>.py` 运行的独立脚本，
+# 只依赖 Python 3.10+ 标准库。此文件仅承载元数据、测试发现配置与编辑器提示，
+# 不引入任何第三方依赖，也不改变"零依赖"承诺。
+
+[project]
+name = "ai-engineering-standards-tooling"
+version = "1.0.0"
+description = "零依赖、跨平台的 AI 工程规范安装与验证工具链"
+requires-python = ">=3.10"
+dependencies = []
+readme = "README.md"
+license = { text = "MIT" }
+
+[project.optional-dependencies]
+# 有意留空：不提供 dev/test 依赖，CI 与本地用标准库 unittest 即可。
+# 若未来需要 coverage 等工具，应作为**可选**依赖并同步更新文档。
+
+[tool.unittest]
+# 由 `python -m unittest discover -s tooling/tests -v` 驱动
+start-dir = "tests"
+pattern = "test_*.py"
+
+[tool.aes-tooling]
+# 与本工具链自身行为有关的可审计常量（权威仍在 validators/targets.py，本段为其镜像快照，
+# 新增/移除工具时须同步；功能一致性由 tooling/config/targets.json 的强制比对保证）。
+installer-version = "1.0.0"
+manifest-schema = 1
+scopes = ["project", "global"]
+supported-tools = ["codex", "claude", "cursor", "copilot", "workbuddy"]
+third-party-dependencies = []
+
+[tool.ruff]
+# 仅编辑器/可选 lint 提示；不是必需依赖，CI 不安装 ruff。
+line-length = 100
+target-version = "py310"

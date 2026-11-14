@@ -1,0 +1,40 @@
+---
+description: "order-console 项目专属约定：FastAPI 分层、订单状态机、导出接口与前端目录结构。"
+globs: "app/**,frontend/src/**,migrations/**"
+alwaysApply: false
+---
+
+# order-console 项目规则（示例）
+
+> 用法：复制到 `.cursor/rules/order-console.mdc`。
+> 使用**不同文件名**，与安装器生成的 `ai-engineering-standards.mdc` 并存，互不覆盖。
+> 只写项目专属内容；通用红线由 `ai-engineering-standards.mdc` 提供。
+
+## 后端
+
+- 请求处理在 `app/api/v1/`，业务规则在 `app/domain/`，
+  基础设施实现在 `app/infra/`；依赖方向只能由外向内。
+- 订单状态共 7 个状态，唯一写入方是 `app/domain/orders/state.py`；
+  不要在 API 层直接改状态字段。
+- 每个导出接口必须带租户条件，且通过 `OrderService` 读取数据。
+- 迁移脚本放在 `migrations/`，改动表结构前先跑 `make migrate-dry-run`。
+
+## 前端
+
+- Vue 3 + `<script setup>` + TypeScript；组件放 `frontend/src/components/`，
+  组合式函数放 `frontend/src/composables/`。
+- 订单详情路由参数用 `useRoute()` 读取，不解析 `window.location`。
+- 新增表格列必须同步更新列配置与空态文案。
+
+## 验证
+
+```bash
+make lint && make typecheck && make test && make build
+```
+
+## 说明
+
+- Cursor 官方要求 Project Rules 使用 `.mdc` 扩展名；`.md` 会被忽略。
+- `globs` 限定本规则只在相关文件进入上下文时自动附加；
+  多个模式用逗号分隔。
+- 用户级规则在 Customize → Rules 中配置（不是磁盘文件），本仓库不写。

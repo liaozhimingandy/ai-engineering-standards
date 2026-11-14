@@ -1,0 +1,83 @@
+name: CI
+
+# 规范仓库自身的验证与测试（Phase 5，任务书 §十一）。
+# 触发：push 与 pull_request。矩阵覆盖 Windows / Linux / macOS 与 Python 3.10 / 3.12。
+# 失败时任一步骤返回非零，job 即失败（GitHub Actions 默认行为）。
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Show environment
+        run: |
+          python --version
+          python -c "import sys; print(sys.platform, sys.version_info[:3])"
+
+      # 1. 规范验证（--strict：把明确的 WARNING 升级为 ERROR）
+      - name: Validate repository (strict)
+        run: python tooling/scripts/validate.py --strict
+
+      # 2. 一致性检查（公共规范 ↔ 适配器）
+      - name: Check consistency (all)
+        run: python tooling/scripts/check.py --all
+
+      # 3. 安装器 dry-run（跨平台路径可解析、零写入）
+      - name: Installer dry-run
+        run: python tooling/scripts/install.py --all --dry-run
+
+      # 4. 自动化测试（含隔离 home 的 global 安装测试，不触碰 runner 真实目录）
+      - name: Unit tests
+        run: python -m unittest discover -s tooling/tests -v
+
+      # 5. Phase 6 统一质量门禁（公共规范 / Skills / 适配器 / 安装器 / 版本）
+      #    矩阵四步已逐项跑过，这里做一次聚合门禁并输出统一结论。
+      - name: Quality gate (strict)
+        run: python tooling/scripts/quality_gate.py --strict
+
+  # ---------------------------------------------------------------------------
+  # Phase 6：PR 合并门禁（汇总）。矩阵任一组合失败则此 job 不通过，PR 不可合并。
+  # 对应发布流程 "PR -> 基础质量检查 -> ... -> 质量门禁 -> 允许合并"。
+  # ---------------------------------------------------------------------------
+  quality-gate:
+    name: PR quality gate
+    needs: validate-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Aggregate quality gate (strict)
+        run: python tooling/scripts/quality_gate.py --strict
+
+      - name: Release readiness (strict, tests already run in matrix)
+        run: python tooling/scripts/release_check.py --strict
+
+  # 本地未测试的平台由本矩阵覆盖；仍需人工在真实 AI 客户端验证运行时加载。
+  # 见 docs/acceptance-report.md 的"需人工验证"清单。
