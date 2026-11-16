@@ -4,7 +4,7 @@ description: 把模糊需求转成可执行的结构化规格，区分明确需�
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
   category: specification
 ---
 

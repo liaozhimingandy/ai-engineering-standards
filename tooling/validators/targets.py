@@ -44,7 +44,7 @@ GLOBAL_BACKUPS_DIR = f"{GLOBAL_MANAGE_ROOT}/backups"
 PROJECT_BACKUPS_DIR = f"{BUNDLE_ROOT}/backups"
 
 # Phase 5 安装器版本（与规范 VERSION 分线管理；manifest 新增 installer_version 字段）。
-INSTALLER_VERSION = "1.0.0"
+INSTALLER_VERSION = "1.1.0"
 
 # global 入口模板的"生成 token"：安装器渲染时替换为真实规范版本。
 # 放在共享常量层，让 installer/resolver 与 validators 都能引用，

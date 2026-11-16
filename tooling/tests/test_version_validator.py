@@ -38,7 +38,7 @@ class VersionValidatorTests(unittest.TestCase):
         info = V.validate_versions(REPO, r)
         self.assertEqual(r.count(C.ERROR), 0, r.render())
         self.assertTrue(info.all_consistent)
-        self.assertEqual(info.spec, "1.0.0")
+        self.assertEqual(info.spec, (REPO / "VERSION").read_text(encoding="utf-8").strip())
 
     def test_02_semver_valid(self):
         for v in ("1.0.0", "0.0.1", "2.10.3", "1.0.0-alpha", "1.0.0-rc.1+build.5"):
@@ -52,7 +52,8 @@ class VersionValidatorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             t = _mini_repo(Path(td))
             p = t / "README.md"
-            p.write_text(p.read_text(encoding="utf-8").replace("version-1.0.0", "version-9.9.9"),
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
+            p.write_text(p.read_text(encoding="utf-8").replace(f"version-{cur}", "version-9.9.9"),
                          encoding="utf-8")
             r = C.Report("t")
             V.validate_versions(t, r)
@@ -64,20 +65,22 @@ class VersionValidatorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             t = _mini_repo(Path(td))
             p = t / "README.md"
-            p.write_text(p.read_text(encoding="utf-8").replace("version-1.0.0-blue",
-                                                                "version-1.0.0-brightgreen"),
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
+            p.write_text(p.read_text(encoding="utf-8").replace(f"version-{cur}-blue",
+                                                                f"version-{cur}-brightgreen"),
                          encoding="utf-8")
             r = C.Report("t")
             info = V.validate_versions(t, r)
-            self.assertEqual(info.readme_badge, "1.0.0")
+            self.assertEqual(info.readme_badge, (t / "VERSION").read_text(encoding="utf-8").strip())
             self.assertEqual(r.count(C.ERROR), 0, r.render())
 
     def test_06_installer_config_drift_detected(self):
         with tempfile.TemporaryDirectory() as td:
             t = _mini_repo(Path(td))
             p = t / "tooling/config/targets.json"
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
             p.write_text(p.read_text(encoding="utf-8").replace(
-                '"installer_version": "1.0.0"', '"installer_version": "2.0.0"'),
+                f'"installer_version": "{cur}"', '"installer_version": "2.0.0"'),
                 encoding="utf-8")
             r = C.Report("t")
             V.validate_versions(t, r)
@@ -87,7 +90,8 @@ class VersionValidatorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             t = _mini_repo(Path(td))
             p = t / "CHANGELOG.md"
-            p.write_text(p.read_text(encoding="utf-8").replace("## [1.0.0]", "## [0.9.0]"),
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
+            p.write_text(p.read_text(encoding="utf-8").replace(f"## [{cur}]", "## [0.9.0]"),
                          encoding="utf-8")
             r = C.Report("t")
             info = V.validate_versions(t, r)

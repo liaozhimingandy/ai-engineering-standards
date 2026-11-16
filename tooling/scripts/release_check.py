@@ -17,7 +17,7 @@ Phase 5 验证器与 Phase 6 门禁，不重复实现任何校验逻辑：
 用法：
     python tooling/scripts/release_check.py
     python tooling/scripts/release_check.py --strict
-    python tooling/scripts/release_check.py --version 1.0.0
+    python tooling/scripts/release_check.py --version 1.1.0
     python tooling/scripts/release_check.py --strict --run-tests
 
 退出码：0 = 所有可执行检查通过（无法执行的项单独列出，不影响 0）；

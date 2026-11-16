@@ -67,7 +67,8 @@ class ReleaseCheckTests(unittest.TestCase):
                 shutil.copy2(REPO / f, t / f)
             # 只做最小集的版本专项：直接调 _check_version 观察 CHANGELOG 项
             p = t / "CHANGELOG.md"
-            p.write_text(p.read_text(encoding="utf-8").replace("## [1.0.0]", "## [0.5.0]"),
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
+            p.write_text(p.read_text(encoding="utf-8").replace(f"## [{cur}]", "## [0.5.0]"),
                          encoding="utf-8")
             rep = RC.ReleaseReport(repo=str(t))
             RC._check_version(t, rep)

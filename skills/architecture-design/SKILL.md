@@ -4,7 +4,7 @@ description: 基于现有架构事实做模块划分、方案比较、依赖与�
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
   category: design
 ---
 

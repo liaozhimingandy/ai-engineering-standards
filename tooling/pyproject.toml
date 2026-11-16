@@ -7,7 +7,7 @@
 
 [project]
 name = "ai-engineering-standards-tooling"
-version = "1.0.0"
+version = "1.1.0"
 description = "零依赖、跨平台的 AI 工程规范安装与验证工具链"
 requires-python = ">=3.10"
 dependencies = []
@@ -26,7 +26,7 @@ pattern = "test_*.py"
 [tool.aes-tooling]
 # 与本工具链自身行为有关的可审计常量（权威仍在 validators/targets.py，本段为其镜像快照，
 # 新增/移除工具时须同步；功能一致性由 tooling/config/targets.json 的强制比对保证）。
-installer-version = "1.0.0"
+installer-version = "1.1.0"
 manifest-schema = 1
 scopes = ["project", "global"]
 supported-tools = ["codex", "claude", "cursor", "copilot", "workbuddy"]

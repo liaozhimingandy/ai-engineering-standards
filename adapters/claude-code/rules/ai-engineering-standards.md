@@ -1,4 +1,4 @@
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=claude source=adapters/claude-code/rules/ai-engineering-standards.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=claude source=adapters/claude-code/rules/ai-engineering-standards.md -->
 <!-- 本文件是可叠加规则：与用户自有 CLAUDE.md / .claude/rules/ 文件并存，不覆盖任何用户配置。 -->
 <!-- 无 frontmatter：按 Claude Code 官方约定，在启动时加载。 -->
 

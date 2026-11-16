@@ -2,7 +2,7 @@
 
 > 跨 AI 编程工具、跨编程语言、跨技术栈、跨软件项目的统一 AI 工程规范体系。
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](VERSION)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Spec](https://img.shields.io/badge/Agent%20Skills-open%20standard-green.svg)](https://agentskills.io/specification)
 

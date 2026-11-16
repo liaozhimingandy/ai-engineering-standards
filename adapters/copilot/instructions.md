@@ -2,7 +2,7 @@
 applyTo: "**"
 ---
 
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=copilot source=adapters/copilot/instructions.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=copilot source=adapters/copilot/instructions.md -->
 <!-- 安装目标：.github/instructions/ai-engineering-standards.instructions.md -->
 <!-- 本文件是路径级叠加指令，与用户自有 .instructions.md 并存，不覆盖仓库级指令。 -->
 

@@ -221,7 +221,7 @@ CI 示例（GitHub Actions，仅做验证，不提交生成文件）：
 ## 6. 安装输出与错误级别
 
 ```
-[INFO]    ai-engineering-standards 1.0.0 -> /path/to/my-app (tools: codex, claude, cursor, copilot, workbuddy)
+[INFO]    ai-engineering-standards 1.1.0 -> /path/to/my-app (tools: codex, claude, cursor, copilot, workbuddy)
 [INFO]    PLAN  .agents/skills/project-analysis/SKILL.md  <- skills/project-analysis/SKILL.md
 [WARNING] SKIP  AGENTS.md (user-owned, never overwritten) -- see docs/installation.md §8
 [ERROR]   ...                      # 必须修复，进程退出码 1

@@ -1,4 +1,4 @@
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=claude source=adapters/claude-code/CLAUDE.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=claude source=adapters/claude-code/CLAUDE.md -->
 <!-- 本文件由 ai-engineering-standards 安装器生成。请勿手工编辑；下次 --force 会被覆盖。 -->
 <!-- 项目自有规则请写在 CLAUDE.local.md 或 .claude/rules/ 下你自己的文件中。 -->
 

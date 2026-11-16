@@ -4,7 +4,7 @@ description: 以独立审查视角按十个维度检查改动，优先报告真�
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
   category: review
 ---
 

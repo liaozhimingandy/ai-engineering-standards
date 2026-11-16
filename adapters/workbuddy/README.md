@@ -11,7 +11,7 @@
 
 - 支持的工具：腾讯 WorkBuddy 桌面端 / CodeBuddy Code CLI（配置目录 `.codebuddy/`）。
 - 参考的官方文档日期：**2026-11-11**。
-- 公共规范版本：`1.0.0`（本阶段未改动）。
+- 公共规范版本：`1.1.0`。
 - **仅 project 作用域**：本适配器是 project-only 工具，不安装任何用户级（`~/.codebuddy/`）文件。任务书明确要求"不创建用户级全局规则""不写入用户级目录"，因此本适配器**没有** `global/ENTRY.md`；在 `GLOBAL_TOOL_SPECS` 中标记为 `project_only`，`--scope global` 时跳过。
 
 ## 2. 官方文档

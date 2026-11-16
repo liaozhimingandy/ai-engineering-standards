@@ -4,7 +4,7 @@ description: 只读地分析陌生项目的目录、入口文档、依赖技术�
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
   category: discovery
 ---
 

@@ -1,4 +1,4 @@
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=copilot source=adapters/copilot/copilot-instructions.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=copilot source=adapters/copilot/copilot-instructions.md -->
 <!-- 本文件由 ai-engineering-standards 安装器生成。请勿手工编辑；下次 --force 会被覆盖。 -->
 <!-- 项目自有规则请写在你自己的 .github/copilot-instructions.md 或路径级 .instructions.md 中。 -->
 

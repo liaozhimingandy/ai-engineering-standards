@@ -4,7 +4,7 @@ description: 在需求与验收标准明确后制定最小修改计划、实施�
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
   category: implementation
 ---
 

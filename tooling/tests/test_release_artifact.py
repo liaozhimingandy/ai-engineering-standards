@@ -44,9 +44,9 @@ class ReleaseArtifactTests(unittest.TestCase):
             out = t / "out" / "a.zip"
             meta = B.build(t, out)
             self.assertTrue(out.is_file())
-            self.assertEqual(meta["version"], "1.0.0")
+            self.assertEqual(meta["version"], (t / "VERSION").read_text(encoding="utf-8").strip())
             self.assertGreater(meta["file_count"], 100)
-            v = B.check_artifact(t, out, expected_version="1.0.0")
+            v = B.check_artifact(t, out, expected_version=(t / "VERSION").read_text(encoding="utf-8").strip())
             self.assertTrue(v["ok"], v.get("errors"))
 
     def test_02_archive_contains_required_markers(self):
@@ -77,7 +77,7 @@ class ReleaseArtifactTests(unittest.TestCase):
             import json
             with zipfile.ZipFile(out) as zf:
                 m = json.loads(zf.read(B.ARTIFACT_PREFIX + "/RELEASE-MANIFEST.json"))
-            self.assertEqual(m["version"], "1.0.0")
+            self.assertEqual(m["version"], (t / "VERSION").read_text(encoding="utf-8").strip())
             self.assertEqual(m["file_count"], len(m["files"]))
             self.assertIn("VERSION", m["files"])
 

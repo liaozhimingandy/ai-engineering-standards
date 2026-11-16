@@ -1,4 +1,4 @@
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=workbuddy source=adapters/workbuddy/rules/ai-engineering-standards.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=workbuddy source=adapters/workbuddy/rules/ai-engineering-standards.md -->
 <!-- 本文件是可叠加的项目级规则：与用户自有 CODEBUDDY.md / .codebuddy/rules/ 文件并存，不覆盖任何用户配置。 -->
 <!-- 无 frontmatter：按 WorkBuddy 官方约定，项目级规则默认常驻注入（alwaysApply 取默认值 true）。 -->
 

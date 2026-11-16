@@ -11,7 +11,7 @@
 
 - 支持的工具：GitHub Copilot（Copilot Chat / CLI / cloud agent / code review / VS Code / JetBrains / Eclipse / Xcode，支持矩阵高度依赖环境，见 §8）。
 - 参考的官方文档日期：**2026-11-11**。
-- 公共规范版本：`1.0.0`（本阶段未改动）。
+- 公共规范版本：`1.1.0`。
 
 > **Phase 4 相对 Phase 1 的更新**：官方现已明确支持 **Agent Hooks**（`.github/hooks/*.json`）与 **Custom Agents**（`.github/agents/*.md`）。本阶段据实纳入能力矩阵与映射说明，但按用户要求**不生成 Hooks 自动化**。
 

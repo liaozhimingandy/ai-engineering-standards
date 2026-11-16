@@ -1,4 +1,4 @@
-<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.0.0 tool=workbuddy source=adapters/workbuddy/CODEBUDDY.md -->
+<!-- AI-ENGINEERING-STANDARDS:MANAGED version=1.1.0 tool=workbuddy source=adapters/workbuddy/CODEBUDDY.md -->
 <!-- 本文件由 ai-engineering-standards 安装器生成。请勿手工编辑；下次 --force 会被覆盖。 -->
 <!-- 项目自有指令请写在你自己的 CODEBUDDY.md 段落、CODEBUDDY.local.md，或 .codebuddy/ 下你自己的文件中。 -->
 

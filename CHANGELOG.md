@@ -8,14 +8,21 @@
 
 ---
 
-## [Unreleased] - 腾讯 WorkBuddy 适配器（第 5 个工具）
+## [1.1.0] - 2026-11-14
 
-> 本段记录新增腾讯 WorkBuddy 适配器的变更，尚未发版。按 [版本规则](docs/versioning.md)，
-> 新增工具适配器属 `MINOR`；是否升版留待阶段审查裁决，本阶段不擅自改动 `VERSION`（仍为 `1.0.0`）。
-> 本阶段严格复用 Phase 5 安装器与 Phase 6 门禁，只做注册表数据扩展 + 通用 project-only 守卫，
-> 不重造公共机制、不改公共规范 `core/standards/skills/agents`。
+> 本版整合 Phase 4（工具适配层）、Phase 5（安装器、验证器与自动化质量检查）、
+> Phase 6（质量治理与正式发布体系）与腾讯 WorkBuddy 适配器（第 5 个工具）。
+>
+> 按 [版本规则](docs/versioning.md)，新增工具适配器、新增检查项、新增工具链均属 `MINOR`。
+> 本次**未改写** `core/ai-behavior.md` 的红线规则、**未重命名**任何 Skill `name`、
+> **未变更**安装目标路径、**未修改** `manifest.json` schema，故不构成 `MAJOR`，定为 `1.1.0`。
+>
+> **迁移说明**：无需迁移步骤。已安装项目执行 `install.py --all --force`
+> 后运行 `check.py` 即可更新到本版；`SKILL.md` 与适配器入口的托管标记版本同步更新。
 
 ### 新增
+
+#### 腾讯 WorkBuddy 适配器（第 5 个工具）
 
 - **WorkBuddy 适配器** `adapters/workbuddy/`：四件套（`README.md` / `mappings.md` /
   `references.md` / `templates/`）+ 入口 `CODEBUDDY.md`（guarded）+ 叠加规则
@@ -31,35 +38,7 @@
 - **文档**：WorkBuddy 适配说明/映射/官方参考；能力矩阵新增 §8；安装器文档新增 §4.6
   项目级安装；架构、统一映射架构、安装目标核实、global 集成说明、示例与 README 同步为五工具。
 
-### 变更
-
-- `tooling/validators/targets.py`：`TOOLS` 加 `workbuddy`（第 5 个工具）、
-  `TOOL_SPECS` 加项目映射（`.codebuddy/skills` + `CODEBUDDY.md` + `.codebuddy/rules/`）、
-  `GLOBAL_TOOL_SPECS` 加 `project_only` 项、别名 `codebuddy` / `tencent-workbuddy`、
-  `check_paths` 加 project-only 护栏。
-- `tooling/config/targets.json`：同步 `tools` / `project.workbuddy` / `global.workbuddy`，
-  新增 `project_only` 可比字段；`adapter_validator` 增加 `tool_aliases` 与 `project_only`
-  双源比对。
-- `tooling/scripts/install.py`：CLI help/别名提示更新为五工具，docstring 说明 project-only。
-- `tooling/validators/common.py`：`REQUIRED_FILES` 纳入 7 个 WorkBuddy 适配文件。
-- 受影响的现有测试 docstring 由"四种工具"更新为"五种工具"（断言本就基于 `T.TOOLS`，无需改逻辑）。
-
-### 明确不做（本阶段）
-
-- 不生成可执行 `.codebuddy/agents/`（只给映射模板）、不生成 Commands（5 个 Skill 已覆盖）。
-- 不写任何用户级全局规则 / 用户级 Skills（`project_only=True`）。
-- 不升 `VERSION`、不改公共规范、不重造安装器/验证器架构、不扩展其他新功能。
-- 真实客户端运行时加载无法在本环境证明，全部标为未验证，不宣称通过。
-
----
-
-## [Unreleased] - Phase 6（质量治理与正式发布体系）
-
-> 本段记录 Phase 6 变更，尚未发版。按 [版本规则](docs/versioning.md)，新增质量门禁、
-> 发布检查与 CI 流程属 `MINOR`；是否升版留待阶段审查裁决，本阶段不擅自改动 `VERSION`
-> （仍为 `1.0.0`）。Phase 6 严格复用 Phase 5 已有的安装器与验证器，不重造其检查逻辑。
-
-### 新增
+#### Phase 6：质量治理与正式发布体系
 
 - **统一质量门禁** `tooling/scripts/quality_gate.py`：把 Phase 5 验证器按五组编排
   （公共规范 / Skills / 适配器 / 安装器 / 版本管理），支持 `--strict`、`--group`、
@@ -85,34 +64,7 @@
   compatibility-testing}.md`、`docs/release/{versioning,release-process,release-checklist}.md`；
   `docs/release/versioning.md` 为发布视角薄入口，版本规则权威源仍是 `docs/versioning.md`。
 
-### 变更
-
-- `tooling/scripts/validate.py` 删除本地 `STRICT_PROMOTIONS` / `apply_strict()`，改为从
-  `quality_rules` 导入，行为不变（`--strict` 仍 0 ERROR / 0 WARNING）。
-- `tooling/validators/consistency_validator.py` 新增 `check_core_mapping()`：检查每份 core
-  规范是否被引用，补齐 Phase 5 只校验"链接目标存在"而不校验"规范是否被映射"的方向。
-- `tooling/validators/common.py` 的 `REQUIRED_FILES` 纳入 Phase 6 脚本、workflow、
-  两个新验证器与 6 篇文档，使结构门禁能发现关键文件缺失。
-- `.github/workflows/ci.yml` 矩阵新增 `quality_gate.py --strict` 聚合门禁，并新增
-  `quality-gate` 汇总 job（依赖矩阵通过，再跑严格门禁与发布检查）。
-- `README.md` 目录结构补 Phase 6 脚本、workflow 与文档入口。
-
-### 明确不做（本阶段）
-
-- 不升 `VERSION`、不创建真实 GitHub Release（须推 Tag 由 workflow 执行）。
-- 不重新实现 Phase 5 的安装器、验证器、一致性检查，只做编排与复用。
-- 不引入任何框架、服务或第三方依赖；发布归档用标准库，CI 用 GitHub Actions。
-- 不擅自进入 Phase 7。
-
----
-
-## [Unreleased] - Phase 5（安装器、验证器与自动化质量检查）
-
-> 本段记录 Phase 5 变更，尚未发版。按 [版本规则](docs/versioning.md)，新增安装器、
-> 验证器、CI 与 CLI 参数属 `MINOR`；`--strict` 的错误分级与退出码语义变化需阶段审查
-> 裁决。本阶段不擅自改动 `VERSION`（仍为 `1.0.0`）。
-
-### 新增
+#### Phase 5：安装器、验证器与自动化质量检查
 
 - **安装核心** `tooling/installer/`（5 个模块 + `__init__`）：
   - `filesystem.py`：路径安全 `ensure_within`、原子写入 `atomic_write`、多文件事务
@@ -139,7 +91,49 @@
 - **工具链说明** `tooling/README.md`、`tooling/pyproject.toml`（纯元数据、零第三方依赖、
   不声明 build-system，明确不是 pip 包）。
 
+#### Phase 4：工具适配层
+
+- **能力对照表** `docs/architecture/tool-compatibility.md`：四种工具 11 项能力的
+  `SUPPORTED`/`PARTIAL`/`UNSUPPORTED`/`UNVERIFIED` 判定 + 五种适配方式 + 逐能力官方依据 +
+  `UNVERIFIED` 清单。
+- **统一映射架构** `adapters/README.md`：公共源→四工具映射清单、映射规则、公共规范引用
+  处理（直接引用/薄入口/叠加副本/镜像）、符号链接 vs 复制跨平台评估、公共规范版本与
+  工具适配版本分别管理。
+- **四个适配器四件套**：`adapters/{codex,claude-code,cursor,copilot}/` 各补
+  `README.md`、`mappings.md`、`references.md`、`templates/`。
+- **模板**：Codex/Claude/Copilot 项目入口叠加片段、Cursor/Copilot 路径级规则模板、
+  Claude/Cursor/Copilot 的 Agent 角色映射模板（字段全部来自官方，不虚构）。
+- **官方参考** `references.md` ×4：逐条记录文档标题、URL、查阅日期（2026-11-11）、
+  来源等级与逐能力依据。
+
 ### 变更
+
+#### 腾讯 WorkBuddy 适配器
+
+- `tooling/validators/targets.py`：`TOOLS` 加 `workbuddy`（第 5 个工具）、
+  `TOOL_SPECS` 加项目映射（`.codebuddy/skills` + `CODEBUDDY.md` + `.codebuddy/rules/`）、
+  `GLOBAL_TOOL_SPECS` 加 `project_only` 项、别名 `codebuddy` / `tencent-workbuddy`、
+  `check_paths` 加 project-only 护栏。
+- `tooling/config/targets.json`：同步 `tools` / `project.workbuddy` / `global.workbuddy`，
+  新增 `project_only` 可比字段；`adapter_validator` 增加 `tool_aliases` 与 `project_only`
+  双源比对。
+- `tooling/scripts/install.py`：CLI help/别名提示更新为五工具，docstring 说明 project-only。
+- `tooling/validators/common.py`：`REQUIRED_FILES` 纳入 7 个 WorkBuddy 适配文件。
+- 受影响的现有测试 docstring 由"四种工具"更新为"五种工具"（断言本就基于 `T.TOOLS`，无需改逻辑）。
+
+#### Phase 6
+
+- `tooling/scripts/validate.py` 删除本地 `STRICT_PROMOTIONS` / `apply_strict()`，改为从
+  `quality_rules` 导入，行为不变（`--strict` 仍 0 ERROR / 0 WARNING）。
+- `tooling/validators/consistency_validator.py` 新增 `check_core_mapping()`：检查每份 core
+  规范是否被引用，补齐 Phase 5 只校验"链接目标存在"而不校验"规范是否被映射"的方向。
+- `tooling/validators/common.py` 的 `REQUIRED_FILES` 纳入 Phase 6 脚本、workflow、
+  两个新验证器与 6 篇文档，使结构门禁能发现关键文件缺失。
+- `.github/workflows/ci.yml` 矩阵新增 `quality_gate.py --strict` 聚合门禁，并新增
+  `quality-gate` 汇总 job（依赖矩阵通过，再跑严格门禁与发布检查）。
+- `README.md` 目录结构补 Phase 6 脚本、workflow 与文档入口。
+
+#### Phase 5
 
 - `tooling/scripts/install.py` 改为薄 CLI，委托 `installer.manager.install()`；保留
   `--tool/--all/--target/--dry-run/--force/--version`，新增
@@ -157,6 +151,15 @@
   （`--scope`/`--home`/`--list`、§4.5 global 安装、更新/备份/卸载）、
   `docs/skills-guide.md`、`docs/standards-guide.md`（检查清单与自动检查边界）。
 
+#### Phase 4
+
+- `docs/tool-adapters.md`：顶部加 Phase 4 复核提示，补齐自定义 Agent / Hooks / MCP 三行，
+  修正 Phase 1 未覆盖的能力（以新能力矩阵为权威来源）。
+- `docs/architecture.md`：补能力对照表与统一映射文档的引用。
+- 据官方最新文档确认（相对 Phase 1 结论的更新）：
+  Copilot 支持 Agent Hooks 与 Custom Agents；Codex 支持 Hooks 与 `config.toml [agents]`；
+  Cursor 支持 Hooks / Subagents / MCP。均只记录能力，不生成自动化配置。
+
 ### 安全
 
 - 默认禁止覆盖任何已存在文件；`--force` 也**不覆盖用户自有文件**，仅允许覆盖经清单
@@ -170,51 +173,18 @@
 - 生成文件（global 入口）以 `version=GENERATED` 为源模板标记，安装时渲染真实 VERSION；
   `check.py` 以同一函数重算新鲜度，避免模板与产物漂移。
 
-### 明确不做（本阶段）
+### 明确不做
 
-- 不升 `VERSION`、不擅自发版（留待阶段审查裁决）。
-- 不做最终项目验收与真实业务项目集成（属 Phase 6）。
-- 不集成官方 `skills-ref`，不宣称与官方参考实现完全等价。
+- 不生成任何 Hooks 自动化配置（各工具格式互不相同、属高价值用户资产且需 trusted）。
+- 不生成任何自定义 Agent 可执行配置文件（`agents/` 是工具无关角色契约）。
+- 不写 `agents/openai.yaml`、`.codex/config.toml`、`.claude/settings.json`、
+  `.cursor/cli-config.json` 等工具专有配置（属用户资产且随版本变化）。
+- 不声称 `skills-ref` 已被集成或测试结果与其等价。
+- 不自动修改用户已有的任何入口文件，也不自动删除旧文件。
+- 不创建 WorkBuddy 用户级全局规则（`project_only=True`，不写 `~/.codebuddy/`）。
+- 不引入任何框架、服务或第三方依赖；全程 Python 3.10+ 标准库。
 - 不提供自动卸载；按 manifest 手工逐项删除，绝不误删用户文件。
-- 不生成任何 Hooks 自动化或自定义 Agent 配置文件。
-
----
-
-## [Unreleased] - Phase 4（工具适配层）
-
-> 本段记录 Phase 4 变更，尚未发版。版本号是否升级（按 [版本规则](docs/versioning.md)，
-> 新增适配器文档/映射属 `MINOR`；Phase 3 的 `code-review` 分级改写属破坏性变更）
-> 留待阶段审查裁决，本阶段不擅自改动 `VERSION`。
-
-### 新增
-
-- **能力对照表** `docs/architecture/tool-compatibility.md`：四种工具 11 项能力的
-  `SUPPORTED`/`PARTIAL`/`UNSUPPORTED`/`UNVERIFIED` 判定 + 五种适配方式 + 逐能力官方依据 +
-  `UNVERIFIED` 清单。
-- **统一映射架构** `adapters/README.md`：公共源→四工具映射清单、映射规则、公共规范引用
-  处理（直接引用/薄入口/叠加副本/镜像）、符号链接 vs 复制跨平台评估、公共规范版本与
-  工具适配版本分别管理。
-- **四个适配器四件套**：`adapters/{codex,claude-code,cursor,copilot}/` 各补
-  `README.md`、`mappings.md`、`references.md`、`templates/`。
-- **模板**：Codex/Claude/Copilot 项目入口叠加片段、Cursor/Copilot 路径级规则模板、
-  Claude/Cursor/Copilot 的 Agent 角色映射模板（字段全部来自官方，不虚构）。
-- **官方参考** `references.md` ×4：逐条记录文档标题、URL、查阅日期（2026-11-11）、
-  来源等级与逐能力依据。
-
-### 变更
-
-- `docs/tool-adapters.md`：顶部加 Phase 4 复核提示，补齐自定义 Agent / Hooks / MCP 三行，
-  修正 Phase 1 未覆盖的能力（以新能力矩阵为权威来源）。
-- `docs/architecture.md`：补能力对照表与统一映射文档的引用。
-- 据官方最新文档确认（相对 Phase 1 结论的更新）：
-  Copilot 支持 Agent Hooks 与 Custom Agents；Codex 支持 Hooks 与 `config.toml [agents]`；
-  Cursor 支持 Hooks / Subagents / MCP。均只记录能力，不生成自动化配置。
-
-### 明确不做（本阶段）
-
-- 不开发正式安装器、完整验证器、自动化安装流程（属 Phase 5）。
-- 不生成任何 Hooks 自动化或自定义 Agent 配置文件。
-- 不升 `VERSION`、不改 `skills/` 与 `core/` 内容、不改 `targets.py`。
+- 真实客户端运行时加载无法在本环境证明，全部标为未验证，不宣称通过。
 
 ---
 

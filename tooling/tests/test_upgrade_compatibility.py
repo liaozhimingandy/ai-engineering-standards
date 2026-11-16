@@ -84,27 +84,28 @@ class UpgradeCompatibilityTests(unittest.TestCase):
     def test_01_unmodified_managed_file_updates(self):
         p = self._install()
         self.assertEqual(p.returncode, 0, txt(p))
-        self.assertEqual(load_manifest(self.target)["version"], "1.0.0")
+        self.assertEqual(load_manifest(self.target)["version"],
+                         (self.repo / "VERSION").read_text(encoding="utf-8").strip())
         # 源内容变化 + 升版本
         (self.repo / "core/engineering-principles.md").write_text(
             (self.repo / "core/engineering-principles.md").read_text(encoding="utf-8")
             + "\n%% NEW CONTENT 1.1.0 %%\n", encoding="utf-8")
-        self._bump_version("1.1.0")
+        self._bump_version("1.2.0")
         p2 = self._install("--force")
         self.assertEqual(p2.returncode, 0, txt(p2))
         self.assertIn("%% NEW CONTENT 1.1.0 %%",
                       (self.target / ".ai-standards/core/engineering-principles.md")
                       .read_text(encoding="utf-8"))
-        self.assertEqual(load_manifest(self.target)["version"], "1.1.0")
+        self.assertEqual(load_manifest(self.target)["version"], "1.2.0")
 
     # ---- 2. 用户改过的托管文件：默认保护；--force 备份后覆盖 ----------
     def test_02_user_modified_managed_file_default_protected_force_backs_up(self):
-        # 首次安装 v1.0.0，然后用户改动一份"已登记的托管文件"
+        # 首次安装当前版本，然后用户改动一份"已登记的托管文件"
         self.assertEqual(self._install().returncode, 0)
         managed = self.target / ".ai-standards/README.md"
         managed.write_text(managed.read_text(encoding="utf-8") + "\nUSER-EDIT\n",
                            encoding="utf-8")
-        self._bump_version("1.1.0")
+        self._bump_version("1.2.0")
 
         # A. 默认升级：SKIP_MODIFIED，用户改动必须保留，并计入 Conflict
         p_default = self._install()
@@ -112,7 +113,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         self.assertIn("USER-EDIT", managed.read_text(encoding="utf-8"),
                       "默认升级必须保护用户改过的托管文件（SKIP_MODIFIED）")
         self.assertIn("Conflict", txt(p_default), "默认升级应报告冲突计数")
-        self.assertEqual(load_manifest(self.target)["version"], "1.1.0")
+        self.assertEqual(load_manifest(self.target)["version"], "1.2.0")
 
         # B. --force 升级：CONFLICT_FORCE，先备份再恢复为托管内容
         #    这与"用户自有文件永不覆盖"（test_02b）是两套不同语义，不可混淆。
@@ -134,7 +135,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         entry = self.target / "AGENTS.md"
         entry.write_text("MY OWN AGENTS\n", encoding="utf-8")
         self.assertEqual(self._install().returncode, 0)
-        self._bump_version("1.1.0")
+        self._bump_version("1.2.0")
         self.assertEqual(self._install("--force").returncode, 0)
         self.assertEqual(entry.read_text(encoding="utf-8").strip(), "MY OWN AGENTS")
 
@@ -146,7 +147,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         (self.repo / "docs/release-new.md").write_text(
             "# 新增文档\n\n这是新版本新增的规范文档，内容足以超过占位文件阈值，"
             "用于验证升级时新文件能被正确安装并登记到清单中。\n", encoding="utf-8")
-        self._bump_version("1.1.0")
+        self._bump_version("1.2.0")
         p2 = self._install("--force")
         self.assertEqual(p2.returncode, 0, txt(p2))
         self.assertTrue((self.target / ".ai-standards/docs/release-new.md").is_file())
@@ -161,7 +162,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         mirror.write_text(mirror.read_text(encoding="utf-8") + "\nUSER-TWEAK\n",
                           encoding="utf-8")
         (self.repo / "standards/languages/typescript.md").unlink()   # 源被删
-        self._bump_version("1.1.0")
+        self._bump_version("1.2.0")
         p2 = self._install("--force")
         self.assertEqual(p2.returncode, 0, txt(p2))
         self.assertTrue(mirror.is_file(), "源文件删除不得导致安装器删除已装文件")
@@ -184,7 +185,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
             return real(dest, data, **kw)
 
         with mock.patch.object(MGR.FS, "atomic_write", side_effect=flaky):
-            code, res = MGR.install(REPO, self.target, ["codex"], T.SCOPE_PROJECT, "1.0.0")
+            code, res = MGR.install(REPO, self.target, ["codex"], T.SCOPE_PROJECT, "1.1.0")
         self.assertTrue(state["failed"], "注入应触发")
         self.assertEqual(code, 1)
         self.assertTrue(res.get("rolled_back"))
@@ -200,7 +201,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         self.assertEqual(mf["schema"], T.MANIFEST_SCHEMA)
         self.assertEqual(mf["installer_version"], T.INSTALLER_VERSION)
         self.assertEqual(mf["scope"], "project")
-        self.assertEqual(mf["version"], "1.0.0")
+        self.assertEqual(mf["version"], (self.repo / "VERSION").read_text(encoding="utf-8").strip())
         self.assertIn("codex", mf["tools"])
         self.assertGreater(len(mf["files"]), 100)
         # manifest 不含绝对路径（安全约束）
@@ -215,7 +216,7 @@ class UpgradeCompatibilityTests(unittest.TestCase):
         p = run(inst, "--all", "--scope", "global", "--home", home)
         self.assertEqual(p.returncode, 0, txt(p))
         mf = load_manifest(home, "global")
-        self.assertEqual(mf["version"], "1.0.0")
+        self.assertEqual(mf["version"], (self.repo / "VERSION").read_text(encoding="utf-8").strip())
         self.assertEqual(mf["scope"], "global")
         # 升级：改源 + 升版本
         (self.repo / "core/security-principles.md").write_text(

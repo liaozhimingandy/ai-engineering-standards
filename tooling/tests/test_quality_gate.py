@@ -77,8 +77,9 @@ class QualityGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             t = _clone(Path(td))
             p = t / "tooling/config/targets.json"
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
             p.write_text(p.read_text(encoding="utf-8").replace(
-                '"installer_version": "1.0.0"', '"installer_version": "9.9.9"'),
+                f'"installer_version": "{cur}"', '"installer_version": "9.9.9"'),
                 encoding="utf-8")
             r = QG.run_gate(t, only=(QG.GATE_ADAPTERS,))
             self.assertFalse(r.passed)
@@ -87,9 +88,10 @@ class QualityGateTests(unittest.TestCase):
     def test_06_version_drift_detected(self):
         with tempfile.TemporaryDirectory() as td:
             t = _clone(Path(td))
+            cur = (t / "VERSION").read_text(encoding="utf-8").strip()
             (t / "README.md").write_text(
                 (t / "README.md").read_text(encoding="utf-8").replace(
-                    "version-1.0.0-blue", "version-7.7.7-blue"), encoding="utf-8")
+                    f"version-{cur}-blue", "version-7.7.7-blue"), encoding="utf-8")
             r = QG.run_gate(t, only=(QG.GATE_VERSION,))
             self.assertFalse(r.passed)
             self.assertGreater(r.groups[QG.GATE_VERSION].count(C.ERROR), 0, QG.render(r))
@@ -131,7 +133,7 @@ class QualityGateTests(unittest.TestCase):
         self.assertTrue(d["strict"])
         self.assertEqual(len(d["groups"]), len(QG.GATES))
         self.assertIn("issues", d["groups"][QG.GATE_CORE])
-        self.assertEqual(d["version"]["spec"], "1.0.0")
+        self.assertEqual(d["version"]["spec"], (REPO / "VERSION").read_text(encoding="utf-8").strip())
 
     def test_11_missing_repo_returns_tool_error(self):
         with tempfile.TemporaryDirectory() as td:

@@ -82,7 +82,7 @@ description: 检查数据库迁移脚本的幂等性与回滚路径。Use when �
 license: MIT
 metadata:
   owner: ai-engineering-standards
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 ```
 
